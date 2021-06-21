@@ -1,5 +1,6 @@
 package ru.netology.web.test;
 
+import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,12 +13,6 @@ import static com.codeborne.selenide.Selenide.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UITest {
-    LoginPage loginPage = new LoginPage();
-    VerificationPage verificationPage = new VerificationPage();
-
-    DataHelper.AuthInfo authInfo1 = DataHelper.getAuthInfo("vasya", "qwerty123");
-    DataHelper.AuthInfo authInfo2 = DataHelper.getAuthInfo("petya", "123qwerty");
-
     DataHelper.BadPassword badPassword = DataHelper.getBadPassword("en");
     String status = "blocked";
     String dashBoardHeaderText = "  Личный кабинет";
@@ -28,6 +23,7 @@ class UITest {
         open("http://localhost:9999");
     }
 
+
     @AfterAll
     static void clean() {
         SQLSetter.dropDataBase();
@@ -35,45 +31,46 @@ class UITest {
 
     @Test
     void shouldLogin() {
-        loginPage
-                .validLogin(authInfo2)
-                .verify(authInfo2)
+        new LoginPage()
+                .validLogin(DataHelper.getAuthInfo2())
+                .verify(SQLSetter.getVerificationCode(DataHelper.getAuthInfo2()))
                 .shouldBeVisible(dashBoardHeaderText);
     }
 
     //    Этот тест должен упасть, оформлено issue - блокирует на 4-й раз корректный ввод SMS-кода, выдаёт уведомление "Ошибка! Превышено количество попыток ввода кода!"
     @Test
     void shouldNotBlocksMultipleLogin() {
-        loginPage
-                .validLogin(authInfo1)
-                .verify(authInfo1);
+        new LoginPage()
+                .validLogin(DataHelper.getAuthInfo1())
+                .verify(SQLSetter.getVerificationCode(DataHelper.getAuthInfo1()));
         back();
         back();
-        loginPage
-                .validLogin(authInfo1)
-                .verify(authInfo1);
+        new LoginPage()
+                .validLogin(DataHelper.getAuthInfo1())
+                .verify(SQLSetter.getVerificationCode(DataHelper.getAuthInfo1()));
         back();
         back();
-        loginPage
-                .validLogin(authInfo1)
-                .verify(authInfo1);
+        new LoginPage()
+                .validLogin(DataHelper.getAuthInfo1())
+                .verify(SQLSetter.getVerificationCode(DataHelper.getAuthInfo1()));
         back();
         back();
-        loginPage
-                .validLogin(authInfo1)
-                .verify(authInfo1)
+        new LoginPage()
+                .validLogin(DataHelper.getAuthInfo1())
+                .verify(SQLSetter.getVerificationCode(DataHelper.getAuthInfo1()))
                 .shouldBeVisible(dashBoardHeaderText);
     }
 
     //    Этот тест должен упасть, оформлено issue - отсутствует блокировка при многократном вводе неверного пароля
     @Test
     void shouldBlocksUserIfPasswordWasWrongThreeTimes() {
-        loginPage
-                .badPasswordLogin(authInfo1, badPassword)
+        new LoginPage()
+                .badPasswordLogin(DataHelper.getAuthInfo1(), badPassword)
                 .clearFields()
-                .badPasswordLogin(authInfo1, badPassword)
+                .badPasswordLogin(DataHelper.getAuthInfo1(), badPassword)
                 .clearFields()
-                .badPasswordLogin(authInfo1, badPassword);
-        assertEquals(SQLSetter.getUserStatus(authInfo1), status);
+                .badPasswordLogin(DataHelper.getAuthInfo1(), badPassword)
+                .shouldBeVisiblePasswordErrorNotification();
+        assertEquals(SQLSetter.getUserStatus(DataHelper.getAuthInfo1()), status);
     }
 }

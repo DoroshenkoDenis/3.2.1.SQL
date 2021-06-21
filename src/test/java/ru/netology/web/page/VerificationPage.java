@@ -15,9 +15,9 @@ public class VerificationPage {
     SelenideElement codeField = $("[data-test-id=code] .input__control");
     SelenideElement verifyButton = $("[data-test-id=action-verify] .button__text");
 
-    public DashboardPage verify(DataHelper.AuthInfo authInfo) {
+    public DashboardPage verify(String code) {
         sleep(500);
-        codeField.setValue(SQLSetter.getVerificationCode(authInfo));
+        codeField.setValue(code);
         sleep(500);
         verifyButton.click();
         sleep(500);

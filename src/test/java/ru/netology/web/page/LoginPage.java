@@ -1,5 +1,6 @@
 package ru.netology.web.page;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.Keys;
 import ru.netology.web.data.DataHelper;
@@ -38,6 +39,11 @@ public class LoginPage {
         passwordField.sendKeys(Keys.CONTROL, "a", Keys.DELETE);
         return new LoginPage();
     }
+
+    public void shouldBeVisiblePasswordErrorNotification() {
+        errorNotification.shouldBe(Condition.visible);
+    }
+
 }
 
 

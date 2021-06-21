@@ -17,8 +17,12 @@ public class DataHelper {
         String password;
     }
 
-    public static AuthInfo getAuthInfo(String login, String password) {
-        return new AuthInfo(login, password);
+    public static AuthInfo getAuthInfo1() {
+        return new AuthInfo("vasya", "qwerty123");
+    }
+
+    public static AuthInfo getAuthInfo2() {
+        return new AuthInfo("petya", "123qwerty");
     }
 
     public static AuthInfo getBadInfo(String locale) {
